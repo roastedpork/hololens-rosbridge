@@ -9,21 +9,20 @@ roslaunch rosbridge_server rosbridge_websocket.launch
 
 # Setting up your project
 
-First, create a `Manager` GameObject with the `RosMessenger` script as a child component as such:
+First, create a `Manager` GameObject with the `RosMessenger` script as a child component via:
 
 ![](images/rosmanager.JPG)
 
 There are three parameters within RosMessenger:
 * `Host`: The IP address of the ROS master node
 * `Port`: The port of the rosbridge_websocket server (default: 9090)
-* `Activation List`: A dynamic list of GameObject that publish/subscribe ROS topics
+* `Activation List`: A dynamic list of GameObject that communicates with ROS
 
-It is vital that all GameObjects that communicate with rosbridge are set to inactive at the start of the application, and added into the `Activation List` parameter. RosMessenger will automatically activate the given list of GameObjects, as this will prevent any attempts to publish/subscribe before RosMessenger is properly set up.
-
+It is vital that all GameObjects that communicate with rosbridge are set to inactive at the start of the application, and added into the `Activation List` parameter. RosMessenger will automatically activate the given list of GameObjects, as this will prevent any attempts to publish/subscribe before RosMessenger is properly set up. The idea is to allow each script to have its own RosPublisher/RosSubscriber instances.
 
 # Creating a custom script
 
-The Unity-generated scripts can be used with a few modifications.
+The Unity-generated scripts can be used with slight modifications.
 Ensure that the custom script inherits from RosComponent and not MonoBehaviour to inherit the `RosManager` member variable. 
 
 ```csharp
@@ -33,7 +32,7 @@ public class TestObject : RosComponent
 }
 ```
 
-At this stage, the `TestObject` component will have a new `Ros Manager` field in the Unity Editor:
+At this stage, the `TestObject` component will have a new `Ros Manager` field in the Unity Editor (e.g. Draw Line script here):
 
 ![](images/setup.JPG)
 
@@ -41,7 +40,7 @@ Simply drag the `Manager` GameObject from the Hierarchy Window into the `Ros Man
 
 # Subscribing and Publishing
 
-The following is an example of how to use a RosSubscriber and RosPublisher, which is similar to the C++ syntax. Note that `RosManager` is a member variable of `RosComponent` and has to be passed to RosSubscriber/RosPublisher whenever they are being instantiated. Unlike the C++/Python implementations, there are no callback functions as that is handled by RosMessenger.
+The following is an example of how to use a RosSubscriber and RosPublisher, which is similar to the C++ syntax. Note that `RosManager` is a member variable of `RosComponent` and has to be passed to RosPublisher/RosSubscriber whenever they are being instantiated. Unlike the C++/Python implementations, there are no callback functions as that is handled by RosMessenger.
 
 ```csharp
 public class TestObject : RosComponent
@@ -85,6 +84,7 @@ public class TestObject : RosComponent
 ```
 
 Currently, most of `std_msgs` and `geometry_msgs` have been implemented. More will be included in the future if necessary.
+
 # Custom Messages
 
 Custom messages are required to inherit the `IRosClassInterface` interface:
@@ -111,11 +111,28 @@ using namespace ros{
 }
 ```
 
+Note that Unity frame axes are different from ROS frame axes in two ways:
+1. Y, Z axes in ROS correspond to Z, Y axes in Unity respectively
+2. Positive angle in ROS follows the right-hand rule for rotation, whilst positive angle in Unity follows the left hand
 
+There are a few methods to address this problem: 
+1. A `(x, y, z)` position vector in ROS => `(x, z, y)` vector in Unity
+2. A `(x, y, z)` rotation vector in ROS => `(-x, -z, -y)` vector in Unity
+3. A `(x, y, z, w)` quaternion in ROS => `(x, z, y, -w)` quaternion in Unity
 
+The C# implementation of the `geometry_msgs/Vector3` and `geometry_msgs/Quaternion` messages have `AsUnityVector` and `AsUnityQuaternion` fields available to perform the conversion automatically. 
 
+```csharp
+ros.geometry_msgs.Vector3 rosvec = new ros.geometry_msgs.Vector3();
+// rosvec.x: ROS x-axis value
+// rosvec.y: ROS y-axis value
+// rosvec.z: ROS z-axis value
 
-
+UnityEngine.Vector3 unityvec = rosvec.AsUnityVector;
+// unityvec.x: ROS x-axis value
+// unityvec.y: ROS z-axis value
+// unityvec.z: ROS y-axis value
+```
 
 
 
