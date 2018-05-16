@@ -22,7 +22,7 @@ There are two parameters that has to be configured:
 The Unity-generated scripts can be used with a few modifications.
 Ensure that the custom script inherits from RosComponent and not MonoBehaviour, and that the following modifications are performed.
 
-7```csharp
+```csharp
 public class TestObject : RosComponent
 {
 
