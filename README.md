@@ -13,29 +13,25 @@ First, create a `Manager` GameObject with the `RosMessenger` script as a child c
 
 ![](images/rosmanager.JPG)
 
-There are two parameters that has to be configured:
+There are three parameters within RosMessenger:
 * `Host`: The IP address of the ROS master node
 * `Port`: The port of the rosbridge_websocket server (default: 9090)
+* `Activation List`: A dynamic list of GameObject that publish/subscribe ROS topics
+
+It is vital that all GameObjects that communicate with rosbridge are set to inactive at the start of the application, and added into the `Activation List` parameter. RosMessenger will automatically activate the given list of GameObjects, as this will prevent any attempts to publish/subscribe before RosMessenger is properly set up.
+
 
 # Creating a custom script
 
 The Unity-generated scripts can be used with a few modifications.
-Ensure that the custom script inherits from RosComponent and not MonoBehaviour, and that the following modifications are performed.
+Ensure that the custom script inherits from RosComponent and not MonoBehaviour to inherit the `RosManager` member variable. 
 
 ```csharp
 public class TestObject : RosComponent
 {
-
-    void Start() {
-        StartCoroutine(WaitForRosMessengerInitialisation());
-        StartCoroutine(WaitUntilRosMessengerConnected());
-
         //...
-    }
 }
 ```
-
-Since GameObjects are instantiated in a random order, the modification will pause the execution of `Start` of this specific GameObject component until the Hololens has successfully connected to the rosbridge server. However, this also means that the instantiation of variables in the later part of the `Start` function would be delayed as well. This is a known cause of `NullReferenceExceptions`, and will be addressed in the future.
 
 At this stage, the `TestObject` component will have a new `Ros Manager` field in the Unity Editor:
 
@@ -59,9 +55,6 @@ public class TestObject : RosComponent
     // ...
 
     void Start(){
-        // Here be Coroutines
-        // ...
-
         RosSubscriber<ros.std_msgs.String> sub = new RosSubscriber<ros.std_msgs.String>(RosManager,
                                                                                         SubName,
                                                                                         RosSubTopic,
@@ -91,7 +84,7 @@ public class TestObject : RosComponent
 }
 ```
 
-Currently, most of `std_msgs` and `geometry_msgs` have been implemented. more will be included in the future if necessary.
+Currently, most of `std_msgs` and `geometry_msgs` have been implemented. More will be included in the future if necessary.
 # Custom Messages
 
 Custom messages are required to inherit the `IRosClassInterface` interface:
