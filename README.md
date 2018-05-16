@@ -20,9 +20,9 @@ There are two parameters that has to be configured:
 # Creating a custom script
 
 The Unity-generated scripts can be used with a few modifications.
-Ensure that the custom script inherits from `RosComponent` and not `MonoBehaviour, and that the following modifications are performed.
+Ensure that the custom script inherits from RosComponent and not MonoBehaviour, and that the following modifications are performed.
 
-```csharp
+7```csharp
 public class TestObject : RosComponent
 {
 
@@ -40,6 +40,93 @@ Since GameObjects are instantiated in a random order, the modification will paus
 At this stage, the `TestObject` component will have a new `Ros Manager` field in the Unity Editor:
 
 ![](images/setup.JPG)
+
+Simply drag the `Manager` GameObject from the Hierarchy Window into the `Ros Manager` field in order to create the reference.
+
+# Subscribing and Publishing
+
+The following is an example of how to use a RosSubscriber and RosPublisher, which is similar to the C++ syntax. Note that `RosManager` is a member variable of `RosComponent` and has to be passed to RosSubscriber/RosPublisher whenever they are being instantiated. Unlike the C++/Python implementations, there are no callback functions as that is handled by RosMessenger.
+
+```csharp
+public class TestObject : RosComponent
+{
+    RosSubscriber<ros.std_msgs.String> sub;
+    RosPublisher<ros.std_msgs.String> pub;
+
+    string RosSubTopic = "hololens/test_sub_topic"; // Example subscribed topic
+    string RosSubType = "std_msgs/String";          // Example message type
+
+    // ...
+
+    void Start(){
+        // Here be Coroutines
+        // ...
+
+        RosSubscriber<ros.std_msgs.String> sub = new RosSubscriber<ros.std_msgs.String>(RosManager,
+                                                                                        SubName,
+                                                                                        RosSubTopic,
+                                                                                        RosSubType);
+
+        RosSubscriber<ros.std_msgs.String> sub = new RosSubscriber<ros.std_msgs.String>(RosManager,
+                                                                                        PubName,
+                                                                                        RosPubTopic,
+                                                                                        RosPubType);
+        // ...
+
+    }
+
+    void Update(){ 
+        // To receive a message
+        if(sub.MsgReady){
+            ros.std_msgs.String msg = sub.GetNewMessage();
+        }
+
+        // ...
+        
+        // To publish a message
+        ros.std_msgs.String resp = ... ;
+        pub.SendMessage(resp);
+    }
+
+}
+```
+
+Currently, most of `std_msgs` and `geometry_msgs` have been implemented. more will be included in the future if necessary.
+# Custom Messages
+
+Custom messages are required to inherit the `IRosClassInterface` interface:
+
+```csharp
+public interface IRosClassInterface
+{
+    void FromJSON(JSONNode json);
+    String ToJSON();
+}
+```
+This is because the messages received from the rosbridge server is sent in JSON format, and each message type has to be handled appropriately. To get an idea of how to implement this, you can inspect `std_msgs` or `geometry_msgs`. The messages are also required to be under the `ros.custom_msgs` namespace:
+
+```csharp
+using namespace ros{
+
+    using namespace custom_msgs{
+
+        public class CustomMsg : IRosClassInterface{
+            // ...
+        }
+
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
 
 
 
