@@ -2,7 +2,7 @@
 using UnityEngine;
 
 
-public abstract class RosObject : MonoBehaviour
+public abstract class RosComponent : MonoBehaviour
 {
     public GameObject RosManager;
 
