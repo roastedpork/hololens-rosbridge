@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using SimpleJSON;
+using System.Collections;
 
 #if !UNITY_EDITOR
 using Windows.Networking.Sockets;
@@ -29,18 +30,19 @@ using Windows.UI.Core;
 using System.Threading.Tasks;
 #endif
 
+[System.Serializable]
 public class RosMessenger : Singleton<RosMessenger>
 {
 
     
     public string host = "192.168.100.127"; // IP address of ROS Master
     public int port    = 9090;              // default for rosbridge_websocket
-
+    public List<GameObject> ActivationList;
 
     //State variables
     private bool busy = false;
     public bool Con { get; private set; }
-
+    
 
     // List of advertised/subscribed ROS topics
     private List<string> advertiseList;
@@ -68,6 +70,26 @@ public class RosMessenger : Singleton<RosMessenger>
         topicBuffer   = new Dictionary<string, Queue<JSONNode>>();
         topicType     = new Dictionary<string, string>();
     }
+
+    public void Start()
+    {
+        StartCoroutine(WaitForConnection());
+        // Once connected, activate all gameobjects tagged as "RosGameObject"
+        
+        foreach (GameObject obj in ActivationList)
+        {
+            obj.SetActive(true);
+        }
+
+
+
+    }
+
+    private IEnumerator WaitForConnection()
+    {
+        yield return new WaitUntil(() => Con);
+    }
+
 
     public void Update()
     {
