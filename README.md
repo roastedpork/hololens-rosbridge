@@ -18,7 +18,7 @@ There are three parameters within RosMessenger:
 * `Port`: The port of the rosbridge_websocket server (default: 9090)
 * `Activation List`: A dynamic list of GameObject that communicates with ROS
 
-It is vital that all GameObjects that communicate with rosbridge are set to inactive at the start of the application, and added into the `Activation List` parameter. RosMessenger will automatically activate the given list of GameObjects, as this will prevent any attempts to publish/subscribe before RosMessenger is properly set up. The idea is to allow each script to have its own RosPublisher/RosSubscriber instances.
+It is vital that all GameObjects that communicate with rosbridge are set to inactive at the start of the application, and added into the `Activation List` parameter. RosMessenger will automatically activate the given list of GameObjects, as this will prevent any attempts by other GameObjects to publish/subscribe before RosMessenger is properly set up. The idea is to allow each script to have its own RosPublisher/RosSubscriber instances.
 
 # Creating a custom script
 
