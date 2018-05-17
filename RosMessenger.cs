@@ -75,11 +75,6 @@ public class RosMessenger : Singleton<RosMessenger>
     {
         StartCoroutine(WaitForConnection());
         // Once connected, activate all gameobjects tagged as "RosGameObject"
-        
-        foreach (GameObject obj in ActivationList)
-        {
-            obj.SetActive(true);
-        }
 
 
 
@@ -88,6 +83,12 @@ public class RosMessenger : Singleton<RosMessenger>
     private IEnumerator WaitForConnection()
     {
         yield return new WaitUntil(() => Con);
+
+        foreach (GameObject obj in ActivationList)
+        {
+            obj.SetActive(true);
+        }
+
     }
 
 
