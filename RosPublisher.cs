@@ -21,13 +21,13 @@ public class RosPublisher<T>
     public RosPublisher(GameObject manager,
                      String nodeName,
                      String rosTopic,
-                     String rosType,
                      int queueSize = 10)
     {
         messenger = manager.GetComponent<RosMessenger>();
         NodeName = nodeName;
         RosTopic = rosTopic;
-        RosType = rosType;
+        RosType = typeof(T).ToString();
+        RosType = RosType.Substring(4, RosType.Length - 4).Replace(".", "/");
         QueueSize = queueSize;
         SendQueue = new Queue<T>();
 #if !UNITY_EDITOR
