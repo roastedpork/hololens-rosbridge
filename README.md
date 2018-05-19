@@ -110,6 +110,8 @@ using namespace ros{
     }
 }
 ```
+RosPublisher and RosSubscriber will use the namespace and class information to generate the appropriate rosmsg name, and pass it to rosbridge.
+
 
 Note that Unity frame axes are different from ROS frame axes in two ways:
 1. Y, Z axes in ROS correspond to Z, Y axes in Unity respectively
