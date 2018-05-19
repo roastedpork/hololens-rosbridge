@@ -325,8 +325,54 @@ namespace ros
             }
         }
 
-        // TODO: Implement Pose2D class
-        
+        public class Pose2D : IRosClassInterface
+        {
+            public System.Double x;
+            public System.Double y;
+            public System.Double theta;
+
+            public UnityEngine.Pose AsUnityPose
+            {
+                get
+                {
+                    UnityEngine.Vector3 p = new UnityEngine.Vector3((float)x, 0, (float)y);
+                    UnityEngine.Quaternion q = UnityEngine.Quaternion.Euler(0, -(float) theta, 0);
+                    return new UnityEngine.Pose(p, q);
+                }
+            }
+
+            // Constructor Functions
+            public Pose2D()
+            {
+                x = 0;
+                y = 0;
+                theta = 0;
+                
+            }
+            public Pose2D(System.Double _x, System.Double _y, System.Double _theta)
+            {
+                x = _x;
+                y = _y;
+                theta = _theta;
+            }
+
+            // IRosClassInterface Implementation
+            public void FromJSON(JSONNode msg)
+            {
+                x = msg["x"].AsDouble;
+                y = msg["y"].AsDouble;
+                theta = msg["theta"].AsDouble;
+
+            }
+            public System.String ToJSON()
+            {
+                return "{"
+                       + "\"x\": " + x.ToString() + ", "
+                       + "\"y\": " + y.ToString() + ", "
+                       + "\"theta\": " + theta.ToString() + "}";
+            }
+        }
+
         public class PoseArray : IRosClassInterface
         {
             public std_msgs.Header header;
