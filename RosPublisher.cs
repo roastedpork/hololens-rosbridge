@@ -18,9 +18,14 @@ public class RosPublisher<T>
     private string RosType;
     private int QueueSize;
 
+    private float prevTimeStamp;
+    private float period;
+
+
     public RosPublisher(GameObject manager,
                      String nodeName,
                      String rosTopic,
+                     float rate = 20,
                      int queueSize = 10)
     {
         messenger = manager.GetComponent<RosMessenger>();
@@ -30,6 +35,12 @@ public class RosPublisher<T>
         RosType = RosType.Substring(4, RosType.Length - 4).Replace(".", "/");
         QueueSize = queueSize;
         SendQueue = new Queue<T>();
+
+        period = 1 / rate;
+        prevTimeStamp = Time.unscaledTime;
+
+
+
 #if !UNITY_EDITOR
         messenger.Advertise(RosTopic, RosType);
         Debug.Log("[" + NodeName + "] Advertised successfully");
@@ -40,30 +51,36 @@ public class RosPublisher<T>
 
     public void SendMessage(T data)
     {
-        if (connected)
+        float currTimeStamp = Time.unscaledTime;
+        if (currTimeStamp - prevTimeStamp > period)
         {
+            if (connected)
+            {
 #if !UNITY_EDITOR
-            // Custom parser to interpret the JSON data into Unity datatypes
-            if (SendQueue.Count > 0)
+                // Custom parser to interpret the JSON data into Unity datatypes
+                if (SendQueue.Count > 0)
+                {
+                    String msg = RosMsg.Encode(SendQueue.Dequeue());
+                    messenger.Publish(RosTopic, msg);
+
+                    Debug.Log("[" + NodeName + "] Publishing: " + msg);
+                }
+
+                String processed = RosMsg.Encode(data);
+                messenger.Publish(RosTopic, processed);
+
+                Debug.Log("[" + NodeName + "] Publishing: " + processed);
+    #endif
+            } else
             {
-                String msg = RosMsg.Encode(SendQueue.Dequeue());
-                messenger.Publish(RosTopic, msg);
-
-                Debug.Log("[" + NodeName + "] Publishing: " + msg);
-            }
-
-            String processed = RosMsg.Encode(data);
-            messenger.Publish(RosTopic, processed);
-
-            Debug.Log("[" + NodeName + "] Publishing: " + processed);
-#endif
-        } else
-        {
-            SendQueue.Enqueue(data);
-            while (SendQueue.Count > QueueSize)
-            {
-                SendQueue.Dequeue();
+                SendQueue.Enqueue(data);
+                while (SendQueue.Count > QueueSize)
+                {
+                    SendQueue.Dequeue();
+                }
             }
         }
+        prevTimeStamp = currTimeStamp;
+
     }
 }
