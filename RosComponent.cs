@@ -7,23 +7,89 @@ public abstract class RosComponent : MonoBehaviour
 {
     public GameObject RosManager;
     protected Dictionary<System.String,System.Double> prevTimeStamp;
-   
+    protected Dictionary<System.String, System.Double> period;
+
     public void Awake()
     {
         prevTimeStamp = new Dictionary<string, double>();
     }
 
+
+    protected RosSubscriber<T> Subscribe<T>(string name, string topic, double rate = 20)
+        where T : IRosClassInterface, new()
+    {
+        prevTimeStamp[name] = Time.unscaledDeltaTime;
+        period[name] = 1 / rate;
+        return new RosSubscriber<T>(RosManager, name, topic);
+    }
+
+    protected RosPublisher<T> Advertise<T>(string name, string topic, double rate = 20)
+        where T : IRosClassInterface, new()
+    {
+        prevTimeStamp[name] = Time.unscaledDeltaTime;
+        period[name] = 1 / rate;
+        return new RosPublisher<T>(RosManager, name, topic);
+    }
+
+
     // Throttles message publishing rate to a defined period, to be used within the Update function
-    protected void Publish<T>(RosPublisher<T> publisher, T data, System.Double period)
+    protected void Publish<T>(RosPublisher<T> publisher, T data)
         where T : IRosClassInterface, new()
     {
         System.Double currTimeStamp = Time.unscaledTime;
-        if(currTimeStamp - prevTimeStamp[publisher.name] > period)
+        if(currTimeStamp - prevTimeStamp[publisher.name] > period[publisher.name])
         {
             publisher.SendMessage(data);
             prevTimeStamp[publisher.name] = currTimeStamp;
         }
     }
+    
+    protected bool Receive<T>(RosSubscriber<T> subscriber, out T message)
+        where T : IRosClassInterface, new()
+    {
+        System.Double currTimeStamp = Time.unscaledTime;
+
+        if (subscriber.MsgReady && 
+            (currTimeStamp - prevTimeStamp[subscriber.name] > period[subscriber.name]))
+        {
+            message = subscriber.GetNewMessage();
+            return true;
+        }
+
+        message = default(T);
+        return false;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // DEPRECATED
