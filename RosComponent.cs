@@ -15,25 +15,38 @@ public abstract class RosComponent : MonoBehaviour
     }
 
 
-    protected RosSubscriber<T> Subscribe<T>(string name, string topic, double rate = 20)
+    protected bool Subscribe<T>(string name, string topic, double rate, out RosSubscriber<T> subscriber)
         where T : IRosClassInterface, new()
     {
+        if (prevTimeStamp.ContainsKey(name))
+        {
+            subscriber = default(RosSubscriber<T>);
+            return false;
+        }
+
         prevTimeStamp[name] = Time.unscaledDeltaTime;
         period[name] = 1 / rate;
-        return new RosSubscriber<T>(RosManager, name, topic);
+        subscriber = new RosSubscriber<T>(RosManager, name, topic);
+        return true;
     }
 
-    protected RosPublisher<T> Advertise<T>(string name, string topic, double rate = 20)
+    protected bool Advertise<T>(string name, string topic, double rate, out RosPublisher<T> publisher)
         where T : IRosClassInterface, new()
     {
+        if (prevTimeStamp.ContainsKey(name))
+        {
+            publisher = default(RosPublisher<T>);
+            return false;
+        }
         prevTimeStamp[name] = Time.unscaledDeltaTime;
         period[name] = 1 / rate;
-        return new RosPublisher<T>(RosManager, name, topic);
+        publisher = new RosPublisher<T>(RosManager, name, topic);
+        return true;
     }
 
 
     // Throttles message publishing rate to a defined period, to be used within the Update function
-    protected void Publish<T>(RosPublisher<T> publisher, T data)
+    protected bool Publish<T>(RosPublisher<T> publisher, T data)
         where T : IRosClassInterface, new()
     {
         System.Double currTimeStamp = Time.unscaledTime;
@@ -41,7 +54,9 @@ public abstract class RosComponent : MonoBehaviour
         {
             publisher.SendMessage(data);
             prevTimeStamp[publisher.name] = currTimeStamp;
+            return true;
         }
+        return false;
     }
     
     protected bool Receive<T>(RosSubscriber<T> subscriber, out T message)
