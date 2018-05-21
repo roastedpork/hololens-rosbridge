@@ -52,32 +52,30 @@ public class RosPublisher<T>
     public void SendMessage(T data)
     {
         float currTimeStamp = Time.unscaledTime;
-        if (currTimeStamp - prevTimeStamp > period)
+
+        if (connected)
         {
-            if (connected)
-            {
 #if !UNITY_EDITOR
-                // Custom parser to interpret the JSON data into Unity datatypes
-                if (SendQueue.Count > 0)
-                {
-                    String msg = RosMsg.Encode(SendQueue.Dequeue());
-                    messenger.Publish(RosTopic, msg);
-
-                    Debug.Log("[" + NodeName + "] Publishing: " + msg);
-                }
-
-                String processed = RosMsg.Encode(data);
-                messenger.Publish(RosTopic, processed);
-
-                Debug.Log("[" + NodeName + "] Publishing: " + processed);
-    #endif
-            } else
+            // Custom parser to interpret the JSON data into Unity datatypes
+            if (SendQueue.Count > 0)
             {
-                SendQueue.Enqueue(data);
-                while (SendQueue.Count > QueueSize)
-                {
-                    SendQueue.Dequeue();
-                }
+                String msg = RosMsg.Encode(SendQueue.Dequeue());
+                messenger.Publish(RosTopic, msg);
+
+                Debug.Log("[" + NodeName + "] Publishing: " + msg);
+            }
+
+            String processed = RosMsg.Encode(data);
+            messenger.Publish(RosTopic, processed);
+
+            Debug.Log("[" + NodeName + "] Publishing: " + processed);
+#endif
+        } else
+        {
+            SendQueue.Enqueue(data);
+            while (SendQueue.Count > QueueSize)
+            {
+                SendQueue.Dequeue();
             }
         }
         prevTimeStamp = currTimeStamp;

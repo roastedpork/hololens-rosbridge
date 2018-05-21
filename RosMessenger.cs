@@ -51,6 +51,7 @@ public class RosMessenger : Singleton<RosMessenger>
     // List of queued ROS messages from subscribed topics
     public Dictionary<string, Queue<JSONNode>> topicBuffer;
     public Dictionary<string, string> topicType;
+    public Dictionary<string, float> topicRate;
 
     //WebSocket client from Windows.Networking.Sockets
 

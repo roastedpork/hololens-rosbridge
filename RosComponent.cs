@@ -6,7 +6,27 @@ using UnityEngine;
 public abstract class RosComponent : MonoBehaviour
 {
     public GameObject RosManager;
+    private System.Double prevTimeStamp;
    
+    public void Awake()
+    {
+        prevTimeStamp = Time.unscaledTime;
+    }
+
+    // Throttles message publishing rate to a defined period, to be used within the Update function
+    protected void Publish<T>(RosPublisher<T> publisher, T data, System.Double period)
+        where T : IRosClassInterface, new()
+    {
+        System.Double currTimeStamp = Time.unscaledTime;
+        if(currTimeStamp - prevTimeStamp > period)
+        {
+            publisher.SendMessage(data);
+            prevTimeStamp = currTimeStamp;
+        }
+    }
+
+
+    // DEPRECATED
     protected IEnumerator WaitForRosMessengerInitialisation(string nodename = "")
     {
         Debug.Log("[" + nodename + "] Waiting until RosMessenger to be initialised");
@@ -19,6 +39,7 @@ public abstract class RosComponent : MonoBehaviour
         Debug.Log("[" + nodename + "] Connected to rosbridge");
     }
 
+    // DEPRECATED
     protected IEnumerator WaitUntilRosMessengerConnected(string nodename = "")
     {
         RosMessenger messenger = RosManager.GetComponent<RosMessenger>();
