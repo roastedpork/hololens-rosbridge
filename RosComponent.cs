@@ -6,22 +6,22 @@ using UnityEngine;
 public abstract class RosComponent : MonoBehaviour
 {
     public GameObject RosManager;
-    private System.Double prevTimeStamp;
+    protected Dictionary<System.String,System.Double> prevTimeStamp;
    
     public void Awake()
     {
-        prevTimeStamp = Time.unscaledTime;
+        prevTimeStamp = new Dictionary<string, double>();
     }
 
     // Throttles message publishing rate to a defined period, to be used within the Update function
-    protected void Publish<T>(RosPublisher<T> publisher, T data, System.Double period)
+    protected void Publish<T>(RosPublisher<T> publisher, System.String pubName, T data, System.Double period)
         where T : IRosClassInterface, new()
     {
         System.Double currTimeStamp = Time.unscaledTime;
-        if(currTimeStamp - prevTimeStamp > period)
+        if(currTimeStamp - prevTimeStamp[pubName] > period)
         {
             publisher.SendMessage(data);
-            prevTimeStamp = currTimeStamp;
+            prevTimeStamp[pubName] = currTimeStamp;
         }
     }
 
