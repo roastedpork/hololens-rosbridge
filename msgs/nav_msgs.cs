@@ -46,8 +46,8 @@ namespace ros
             {
                 System.String ret = "{";
                 ret += "\"header\": " + header.ToJSON() + ", ";
-                ret += "\"cell_width\": " + cell_width.ToString() + ", ";
-                ret += "\"cell_height\": " + cell_height.ToString() + ", ";
+                ret += "\"cell_width\": " + cell_width.ToString("F3") + ", ";
+                ret += "\"cell_height\": " + cell_height.ToString("F3") + ", ";
                 ret += "\"cells\": [";
                 ret += System.String.Join(", ", cells.Select(a => a.ToJSON()).ToArray());
                 ret += "]}";

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using SimpleJSON;
 
@@ -128,11 +130,12 @@ namespace ros
             public System.String ToJSON()
             {
                 return "{"
-                       + "\"x\": " + x.ToString() + ", "
-                       + "\"y\": " + y.ToString() + ", "
-                       + "\"z\": " + z.ToString() + "}";
+                       + "\"x\": " + x.ToString("F3") + ", "
+                       + "\"y\": " + y.ToString("F3") + ", "
+                       + "\"z\": " + z.ToString("F3") + "}";
             }
-
+            
+            
         }
 
         public class Point32 : IRosClassInterface
@@ -182,9 +185,9 @@ namespace ros
             public System.String ToJSON()
             {
                 return "{"
-                       + "\"x\": " + x.ToString() + ", "
-                       + "\"y\": " + y.ToString() + ", "
-                       + "\"z\": " + z.ToString() + "}";
+                       + "\"x\": " + x.ToString("F3") + ", "
+                       + "\"y\": " + y.ToString("F3") + ", "
+                       + "\"z\": " + z.ToString("F3") + "}";
             }
 
         }
@@ -311,6 +314,18 @@ namespace ros
                 orientation = _orient;
             }
 
+            public Pose(UnityEngine.Pose _pose)
+            {
+                position = new Point(_pose.position);
+                orientation = new Quaternion(_pose.rotation);
+            }
+
+            public Pose(UnityEngine.Vector3 _position, UnityEngine.Quaternion _rotation)
+            {
+                position = new Point(_position);
+                orientation = new Quaternion(_rotation);
+            }
+
             // IRosClassInterface Implementation
             public void FromJSON(JSONNode msg)
             {
@@ -367,9 +382,9 @@ namespace ros
             public System.String ToJSON()
             {
                 return "{"
-                       + "\"x\": " + x.ToString() + ", "
-                       + "\"y\": " + y.ToString() + ", "
-                       + "\"theta\": " + theta.ToString() + "}";
+                       + "\"x\": " + x.ToString("F3") + ", "
+                       + "\"y\": " + y.ToString("F3") + ", "
+                       + "\"theta\": " + theta.ToString("F3") + "}";
             }
         }
 
@@ -481,6 +496,13 @@ namespace ros
                 z = _z;
                 w = _w;
             }
+            public Quaternion(UnityEngine.Quaternion _q)
+            {
+                x = _q.x;
+                y = _q.z;
+                z = _q.y;
+                w = -_q.w;
+            }
 
             // IRosClassInterface Implementation
             public void FromJSON(JSONNode msg)
@@ -493,10 +515,10 @@ namespace ros
             public System.String ToJSON()
             {
                 return "{"
-                       + "\"x\": " + x.ToString() + ", "
-                       + "\"y\": " + y.ToString() + ", "
-                       + "\"z\": " + z.ToString() + ", "
-                       + "\"w\": " + w.ToString() + "}";
+                       + "\"x\": " + x.ToString("F3") + ", "
+                       + "\"y\": " + y.ToString("F3") + ", "
+                       + "\"z\": " + z.ToString("F3") + ", "
+                       + "\"w\": " + w.ToString("F3") + "}";
             }
         }
 
@@ -668,9 +690,9 @@ namespace ros
             public System.String ToJSON()
             {
                 return "{"
-                       + "\"x\": " + x.ToString() + ", "
-                       + "\"y\": " + y.ToString() + ", "
-                       + "\"z\": " + z.ToString() + "}";
+                       + "\"x\": " + x.ToString("F3") + ", "
+                       + "\"y\": " + y.ToString("F3") + ", "
+                       + "\"z\": " + z.ToString("F3") + "}";
             }
         }
 

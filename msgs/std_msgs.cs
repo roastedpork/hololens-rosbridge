@@ -121,10 +121,10 @@ namespace ros
             public System.String ToJSON()
             {
                 return "{ "
-                        + "\"r\": " + r.ToString() + ", "
-                        + "\"g\": " + g.ToString() + ", "
-                        + "\"b\": " + b.ToString() + ", "
-                        + "\"a\": " + a.ToString() + "}";
+                        + "\"r\": " + r.ToString("F3") + ", "
+                        + "\"g\": " + g.ToString("F3") + ", "
+                        + "\"b\": " + b.ToString("F3") + ", "
+                        + "\"a\": " + a.ToString("F3") + "}";
             }
         }
 
