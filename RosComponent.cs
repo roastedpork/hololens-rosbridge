@@ -14,14 +14,14 @@ public abstract class RosComponent : MonoBehaviour
     }
 
     // Throttles message publishing rate to a defined period, to be used within the Update function
-    protected void Publish<T>(RosPublisher<T> publisher, System.String pubName, T data, System.Double period)
+    protected void Publish<T>(RosPublisher<T> publisher, T data, System.Double period)
         where T : IRosClassInterface, new()
     {
         System.Double currTimeStamp = Time.unscaledTime;
-        if(currTimeStamp - prevTimeStamp[pubName] > period)
+        if(currTimeStamp - prevTimeStamp[publisher.name] > period)
         {
             publisher.SendMessage(data);
-            prevTimeStamp[pubName] = currTimeStamp;
+            prevTimeStamp[publisher.name] = currTimeStamp;
         }
     }
 

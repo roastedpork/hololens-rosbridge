@@ -11,7 +11,7 @@ public class RosSubscriber<T>
     private Queue<JSONNode> buffer;
     private Queue<T> MsgQueue;
 
-    private String NodeName;
+    public String name;
     private String RosTopic;
     private String RosType;
     private int QueueSize;
@@ -39,7 +39,7 @@ public class RosSubscriber<T>
     {
         // During instantiation, it is assumed that the RosManager instance is ready and connected
         RosMessenger messenger = manager.GetComponent<RosMessenger>();
-        NodeName = nodeName;
+        name = nodeName;
         RosTopic = rosTopic;
         RosType = typeof(T).ToString(); //rosType;
         RosType = RosType.Substring(4, RosType.Length - 4).Replace(".", "/");
@@ -50,7 +50,7 @@ public class RosSubscriber<T>
         messenger.Subscribe(RosTopic, RosType);
         buffer = messenger.topicBuffer[RosTopic];
 
-        Debug.Log("[" + NodeName + "] Subscribed successfully, message type: " + RosType);
+        Debug.Log("[" + name + "] Subscribed successfully, message type: " + RosType);
 #endif
 
     }
@@ -64,7 +64,7 @@ public class RosSubscriber<T>
             T processed = RosMsg.Decode<T>(data);
             MsgQueue.Enqueue(processed);
 
-            Debug.Log("[" + NodeName + "] Received: " + processed.ToJSON());
+            Debug.Log("[" + name + "] Received: " + processed.ToJSON());
 
             while(MsgQueue.Count > QueueSize)
             {

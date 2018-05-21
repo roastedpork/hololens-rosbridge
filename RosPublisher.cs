@@ -13,15 +13,11 @@ public class RosPublisher<T>
 
     private Queue<T> SendQueue;
 
-    private string NodeName;
+    public string name;
     private string RosTopic;
     private string RosType;
     private int QueueSize;
-
-    private float prevTimeStamp;
-    private float period;
-
-
+    
     public RosPublisher(GameObject manager,
                      String nodeName,
                      String rosTopic,
@@ -29,21 +25,16 @@ public class RosPublisher<T>
                      int queueSize = 10)
     {
         messenger = manager.GetComponent<RosMessenger>();
-        NodeName = nodeName;
+        name = nodeName;
         RosTopic = rosTopic;
         RosType = typeof(T).ToString();
         RosType = RosType.Substring(4, RosType.Length - 4).Replace(".", "/");
         QueueSize = queueSize;
         SendQueue = new Queue<T>();
-
-        period = 1 / rate;
-        prevTimeStamp = Time.unscaledTime;
-
-
-
+                
 #if !UNITY_EDITOR
         messenger.Advertise(RosTopic, RosType);
-        Debug.Log("[" + NodeName + "] Advertised successfully");
+        Debug.Log("[" + name + "] Advertised successfully");
 #endif
         connected = true;
 
@@ -51,8 +42,6 @@ public class RosPublisher<T>
 
     public void SendMessage(T data)
     {
-        float currTimeStamp = Time.unscaledTime;
-
         if (connected)
         {
 #if !UNITY_EDITOR
@@ -62,15 +51,16 @@ public class RosPublisher<T>
                 String msg = RosMsg.Encode(SendQueue.Dequeue());
                 messenger.Publish(RosTopic, msg);
 
-                Debug.Log("[" + NodeName + "] Publishing: " + msg);
+                Debug.Log("[" + name + "] Publishing: " + msg);
             }
 
             String processed = RosMsg.Encode(data);
             messenger.Publish(RosTopic, processed);
 
-            Debug.Log("[" + NodeName + "] Publishing: " + processed);
+            Debug.Log("[" + name + "] Publishing: " + processed);
 #endif
-        } else
+        }
+        else
         {
             SendQueue.Enqueue(data);
             while (SendQueue.Count > QueueSize)
@@ -78,7 +68,5 @@ public class RosPublisher<T>
                 SendQueue.Dequeue();
             }
         }
-        prevTimeStamp = currTimeStamp;
-
     }
 }
