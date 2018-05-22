@@ -5,7 +5,7 @@ using SimpleJSON;
 
 namespace ros
 {
-    namespace hololens_drive
+    namespace hololens_project
     {
         public class Obstacle : IRosClassInterface
         {

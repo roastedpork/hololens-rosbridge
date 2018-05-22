@@ -6,12 +6,13 @@ using UnityEngine;
 public abstract class RosComponent : MonoBehaviour
 {
     public GameObject RosManager;
-    protected Dictionary<System.String,System.Double> prevTimeStamp;
+    protected Dictionary<System.String, System.Double> prevTimeStamp;
     protected Dictionary<System.String, System.Double> period;
 
     public void Awake()
     {
         prevTimeStamp = new Dictionary<string, double>();
+        period = new Dictionary<string, double>();
     }
 
 
@@ -26,7 +27,7 @@ public abstract class RosComponent : MonoBehaviour
 
         prevTimeStamp[name] = Time.unscaledDeltaTime;
         period[name] = 1 / rate;
-        subscriber = new RosSubscriber<T>(RosManager, name, topic);
+        subscriber = new RosSubscriber<T>(RosManager, name, topic, 1);
         return true;
     }
 
@@ -40,7 +41,7 @@ public abstract class RosComponent : MonoBehaviour
         }
         prevTimeStamp[name] = Time.unscaledDeltaTime;
         period[name] = 1 / rate;
-        publisher = new RosPublisher<T>(RosManager, name, topic);
+        publisher = new RosPublisher<T>(RosManager, name, topic, 1);
         return true;
     }
 
