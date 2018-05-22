@@ -79,35 +79,6 @@ public abstract class RosComponent : MonoBehaviour
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // DEPRECATED
     protected IEnumerator WaitForRosMessengerInitialisation(string nodename = "")
     {
