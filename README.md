@@ -40,46 +40,62 @@ Simply drag the `Manager` GameObject from the Hierarchy Window into the `Ros Man
 
 # Subscribing and Publishing
 
-The following is an example of how to use a RosSubscriber and RosPublisher, which is similar to the C++ syntax. Note that `RosManager` is a member variable of `RosComponent` and has to be passed to RosPublisher/RosSubscriber whenever they are being instantiated. Unlike the C++/Python implementations, there are no callback functions as that is handled by RosMessenger.
+The following is an example of how to use a RosSubscriber and RosPublisher. 
+Unlike the C++/Python implementations, there are no callback functions to be implmented when subscribing to a topic, since you can simply get a new message from the subscriber at every Update call.
 
+First let your custom script inherit `RosComponent` and not `MonoBehaviour`, and instantiate all publishers/subscribers as member variables:
 ```csharp
 public class TestObject : RosComponent
 {
     RosSubscriber<ros.std_msgs.String> sub;
     RosPublisher<ros.std_msgs.String> pub;
 
-    string RosSubTopic = "hololens/test_sub_topic"; // Example subscribed topic
-    string RosSubType = "std_msgs/String";          // Example message type
+    // ...
+```
+
+The `TestObject` class inherits the `Subscribe` and `Advertise` methods from `RosComponent`, which needs to be instantiated in the `Start` function in the following syntax:
+```csharp
 
     // ...
 
     void Start(){
-        RosSubscriber<ros.std_msgs.String> sub = new RosSubscriber<ros.std_msgs.String>(RosManager,
-                                                                                        SubName,
-                                                                                        RosSubTopic,
-                                                                                        RosSubType);
+        
+        // Create a new RosSubscriber by calling on the Subscribe function
+        // Subscribe<T>(string name, string topic, double rate, out RosSubscriber<T> subscriber);
+        Subscribe("TestSub", "/hololens/testsub", 5, out sub);
 
-        RosSubscriber<ros.std_msgs.String> sub = new RosSubscriber<ros.std_msgs.String>(RosManager,
-                                                                                        PubName,
-                                                                                        RosPubTopic,
-                                                                                        RosPubType);
+        // Create a new RosPublisher by calling on the Advertise function
+        // Advertise<T>(string name, string topic, double rate, out RosPublisher<T> subscriber);
+        Advertise("TestPub", "/hololens/testpub", 5, out pub);
+        
         // ...
 
     }
+    
+    // ...
 
+```
+
+
+`TestObject` also inherits the `Publish` and `Receive` methods, which will return a boolean status result, indicating if the message has been successfully sent/received. A `false` value indicate that a previous message had been recently sent/received, and the current message has failed.
+```csharp
+
+    // ...
     void Update(){ 
         // To receive a message
-        if(sub.MsgReady){
-            ros.std_msgs.String msg = sub.GetNewMessage();
+        ros.std_msgs.String msg;
+        
+        if(Receive(sub, out msg){
+            // Perform operations with the received message
+            // ...
         }
 
-        // ...
-        
         // To publish a message
-        ros.std_msgs.String resp = ... ;
-        pub.SendMessage(resp);
+        ros.std_msgs.String resp = new rosbridge.std_msgs.String("Hello World");
+        if(Publish(pub, resp)){
+            // ...
+        }
     }
-
 }
 ```
 
