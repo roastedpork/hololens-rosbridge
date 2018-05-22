@@ -1,6 +1,7 @@
 # hololens-rosbridge
 
 This repository can be added into a Unity Hololens project and should work off-the-shelf.
+Note that the code has only been tested with the Hololens, and not on the Unity Editor.
 It is an easy-to-use API that connects to rosbridge on the ROS master machine via websocket, based on the [holoROS](https://github.com/soliagabriel/holoROS) project done by Solia Gabriel.
 Before starting your application on the Hololens, ensure that the rosbridge ROS package has been installed on the master ROS machine. To start the rosbridge server, run:
 ```
