@@ -43,7 +43,7 @@ Simply drag the `Manager` GameObject from the Hierarchy Window into the `Ros Man
 The following is an example of how to use a RosSubscriber and RosPublisher. 
 Unlike the C++/Python implementations, there are no callback functions to be implmented when subscribing to a topic, since you can simply get a new message from the subscriber at every Update call.
 
-First let your custom script inherit `RosComponent` and not `MonoBehaviour`, and instantiate all publishers/subscribers as member variables:
+First, instantiate all publishers/subscribers as member variables:
 ```csharp
 public class TestObject : RosComponent
 {
