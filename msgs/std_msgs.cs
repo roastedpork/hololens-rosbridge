@@ -287,7 +287,7 @@ namespace ros
             public void FromJSON(JSONNode msg)
             {
                 seq = (System.Int32)msg["seq"].AsDouble;
-                stamp = msg["stamp"]["secs"].AsDouble + msg["stamp"]["nsecs"].AsDouble * 10e-9;
+                stamp = msg["stamp"]["secs"].AsDouble + msg["stamp"]["nsecs"].AsDouble * 1e-9;
                 frame_id = msg["frame_id"].Value;
             }
             public System.String ToJSON()
