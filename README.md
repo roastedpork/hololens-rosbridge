@@ -85,13 +85,13 @@ The `TestObject` class inherits the `Subscribe` and `Advertise` methods from `Ro
         // To receive a message
         ros.std_msgs.String msg;
         
-        if(Receive(sub, out msg){
+        if(Receive(sub, out msg)){
             // Perform operations with the received message
             // ...
         }
 
         // To publish a message
-        ros.std_msgs.String resp = new rosbridge.std_msgs.String("Hello World");
+        ros.std_msgs.String resp = new ros.std_msgs.String("Hello World");
         if(Publish(pub, resp)){
             // ...
         }
