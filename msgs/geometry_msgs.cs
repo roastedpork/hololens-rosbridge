@@ -391,7 +391,7 @@ namespace ros
         public class PoseArray : IRosClassInterface
         {
             public std_msgs.Header header;
-            private List<Pose> poses;
+            public List<Pose> poses;
 
             // Constructor Functions
             public PoseArray()
