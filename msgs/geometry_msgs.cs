@@ -225,14 +225,14 @@ namespace ros
 
         public class Polygon : IRosClassInterface
         {
-            public List<Point> points;
+            public List<Point32> points;
 
             // Constructor Functions
             public Polygon()
             {
-                points = new List<Point>();
+                points = new List<Point32>();
             }
-            public Polygon(List<Point> _points)
+            public Polygon(List<Point32> _points)
             {
                 points = _points;
             }
@@ -240,12 +240,12 @@ namespace ros
             // IRosClassInterface Implementation
             public void FromJSON(JSONNode msg)
             {
-                points = new List<Point>();
+                points = new List<Point32>();
                 foreach (var t in msg["points"].Children)
                 {
-                    points.Add(new Point(t["x"].AsDouble,
-                                         t["y"].AsDouble,
-                                         t["z"].AsDouble));
+                    Point32 temp = new Point32();
+                    temp.FromJSON(t);
+                    points.Add(temp);
                 }
             }
             public System.String ToJSON()
