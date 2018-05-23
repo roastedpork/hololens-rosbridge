@@ -149,9 +149,7 @@ namespace ros
                 // Because Unity world axes are screwed up                                                    
                 get
                 {
-                    return new UnityEngine.Vector3(x,
-                                                   z,
-                                                   y);
+                    return new UnityEngine.Vector3(x, z, y);
                 }
             }
 
