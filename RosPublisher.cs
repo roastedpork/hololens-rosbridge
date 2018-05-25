@@ -8,7 +8,6 @@ public class RosPublisher<T>
     where T : IRosClassInterface, new()
 {
 
-    private RosMessenger messenger;
     private bool connected = false;
 
     private Queue<T> SendQueue;
@@ -18,13 +17,12 @@ public class RosPublisher<T>
     private string RosType;
     private int QueueSize;
     
-    public RosPublisher(GameObject manager,
-                     String nodeName,
-                     String rosTopic,
-                     float rate = 20,
-                     int queueSize = 10)
+    public RosPublisher(String nodeName,
+                        String rosTopic,
+                        float rate = 20,
+                        int queueSize = 10)
     {
-        messenger = manager.GetComponent<RosMessenger>();
+
         name = nodeName;
         RosTopic = rosTopic;
         RosType = typeof(T).ToString();
@@ -33,7 +31,7 @@ public class RosPublisher<T>
         SendQueue = new Queue<T>();
                 
 #if !UNITY_EDITOR
-        messenger.Advertise(RosTopic, RosType);
+        RosMessenger.Instance.Advertise(RosTopic, RosType);
         Debug.Log("[" + name + "] Advertised successfully");
 #endif
         connected = true;
@@ -49,13 +47,13 @@ public class RosPublisher<T>
             if (SendQueue.Count > 0)
             {
                 String msg = RosMsg.Encode(SendQueue.Dequeue());
-                messenger.Publish(RosTopic, msg);
+                RosMessenger.Instance.Publish(RosTopic, msg);
 
                 Debug.Log("[" + name + "] Publishing: " + msg);
             }
 
             String processed = RosMsg.Encode(data);
-            messenger.Publish(RosTopic, processed);
+            RosMessenger.Instance.Publish(RosTopic, processed);
 
             Debug.Log("[" + name + "] Publishing: " + processed);
 #endif

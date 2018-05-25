@@ -5,7 +5,6 @@ using UnityEngine;
 
 public abstract class RosComponent : MonoBehaviour
 {
-    public GameObject RosManager;
     protected Dictionary<System.String, System.Double> prevTimeStamp;
     protected Dictionary<System.String, System.Double> period;
 
@@ -27,7 +26,7 @@ public abstract class RosComponent : MonoBehaviour
 
         prevTimeStamp[name] = Time.unscaledDeltaTime;
         period[name] = 1 / rate;
-        subscriber = new RosSubscriber<T>(RosManager, name, topic, 1);
+        subscriber = new RosSubscriber<T>(name, topic, 1);
         return true;
     }
 
@@ -41,7 +40,7 @@ public abstract class RosComponent : MonoBehaviour
         }
         prevTimeStamp[name] = Time.unscaledDeltaTime;
         period[name] = 1 / rate;
-        publisher = new RosPublisher<T>(RosManager, name, topic, 1);
+        publisher = new RosPublisher<T>(name, topic, 1);
         return true;
     }
 
@@ -74,32 +73,6 @@ public abstract class RosComponent : MonoBehaviour
 
         message = default(T);
         return false;
-    }
-
-
-
-
-    // DEPRECATED
-    protected IEnumerator WaitForRosMessengerInitialisation(string nodename = "")
-    {
-        Debug.Log("[" + nodename + "] Waiting until RosMessenger to be initialised");
-        yield return new WaitUntil(() => RosManager.GetComponent<RosMessenger>() != null);
-
-        Debug.Log("[" + nodename + "] Waiting until RosMessenger is connected to rosbridge...");
-        RosMessenger messenger = RosManager.GetComponent<RosMessenger>();
-        yield return new WaitUntil(() => messenger.Con);
-
-        Debug.Log("[" + nodename + "] Connected to rosbridge");
-    }
-
-    // DEPRECATED
-    protected IEnumerator WaitUntilRosMessengerConnected(string nodename = "")
-    {
-        RosMessenger messenger = RosManager.GetComponent<RosMessenger>();
-        Debug.Log("[" + nodename + "] Waiting until RosMessenger is connected to rosbridge...");
-        yield return new WaitUntil(() => messenger.Con);
-        Debug.Log("[" + nodename + "] Connected to rosbridge");
-
     }
 
 }

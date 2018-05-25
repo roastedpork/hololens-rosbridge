@@ -32,23 +32,21 @@ public class RosSubscriber<T>
         }
     }
 
-    public RosSubscriber(GameObject manager, 
-                         String nodeName,
+    public RosSubscriber(String nodeName,
                          String rosTopic,
                          int queueSize = 10)
     {
         // During instantiation, it is assumed that the RosManager instance is ready and connected
-        RosMessenger messenger = manager.GetComponent<RosMessenger>();
         name = nodeName;
         RosTopic = rosTopic;
-        RosType = typeof(T).ToString(); //rosType;
+        RosType = typeof(T).ToString();
         RosType = RosType.Substring(4, RosType.Length - 4).Replace(".", "/");
         QueueSize = queueSize;
         MsgQueue = new Queue<T>();
 
 #if !UNITY_EDITOR
-        messenger.Subscribe(RosTopic, RosType);
-        buffer = messenger.topicBuffer[RosTopic];
+        RosMessenger.Instance.Subscribe(RosTopic, RosType);
+        buffer = RosMessenger.Instance.topicBuffer[RosTopic];
 
         Debug.Log("[" + name + "] Subscribed successfully, message type: " + RosType);
 #endif
