@@ -119,7 +119,7 @@ public class RosMessenger : Singleton<RosMessenger>
         if (!Con && !busy)
         {
             busy = true;
-            Debug.Log("Connecting to rosbridge...");
+            Debug.Log("Connecting to rosbridge at " + host + ":" + port + "...");
 
 
 #if !UNITY_EDITOR
