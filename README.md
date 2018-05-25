@@ -32,19 +32,14 @@ public class TestObject : RosComponent
         //...
 }
 ```
+This allows the component to inherit the Advertise, Subscribe, Publish and Receive methods.
 
-At this stage, the `TestObject` component will have a new `Ros Manager` field in the Unity Editor (e.g. Draw Line script here):
+## Advertising and Subscribing
 
-![](images/setup.JPG)
-
-Simply drag the `Manager` GameObject from the Hierarchy Window into the `Ros Manager` field in order to create the reference.
-
-# Subscribing and Publishing
-
-The following is an example of how to use a RosSubscriber and RosPublisher. 
+The following is an example of how to use the RosSubscriber and RosPublisher generic classes, which require a specified ROS message type written in C# when being instantiated. Creating your own custom message will be explained in a later section.
 Unlike the C++/Python implementations, there are no callback functions to be implmented when subscribing to a topic, since you can simply get a new message from the subscriber at every Update call.
 
-First, instantiate all publishers/subscribers as member variables:
+First, instantiate all publishers/subscribers as member variables of your script class, along with the intended message types:
 ```csharp
 public class TestObject : RosComponent
 {
@@ -78,7 +73,9 @@ The `TestObject` class inherits the `Subscribe` and `Advertise` methods from `Ro
 ```
 
 
-`TestObject` also inherits the `Publish` and `Receive` methods, which will return a boolean status result, indicating if the message has been successfully sent/received. A `false` value indicate that a previous message had been recently sent/received, and the current message has failed.
+## Publishing and Receiving
+
+`TestObject` also inherits the `Publish` and `Receive` methods, which will return a boolean status result indicating whether the message has been successfully sent/received. A `false` value indicates that a previous message had been recently sent/received, and the current message has failed.
 ```csharp
 
     // ...
@@ -93,14 +90,14 @@ The `TestObject` class inherits the `Subscribe` and `Advertise` methods from `Ro
 
         // To publish a message
         ros.std_msgs.String resp = new ros.std_msgs.String("Hello World");
-        if(Publish(pub, resp)){
+        Publish(pub, resp); 
             // ...
         }
     }
 }
 ```
 
-Currently, most of `std_msgs` and `geometry_msgs` have been implemented. More will be included in the future if necessary.
+Currently, most of `std_msgs` and `geometry_msgs` have been implemented, and are stored in the `msgs` subfolder. More will be included in the future if necessary.
 
 # Custom Messages
 
@@ -129,6 +126,7 @@ using namespace ros{
 ```
 RosPublisher and RosSubscriber will use the namespace and class information to generate the appropriate rosmsg name, and pass it to rosbridge.
 
+## Frame Axes Differences between Unity and ROS
 
 Note that Unity frame axes are different from ROS frame axes in two ways:
 1. Y, Z axes in ROS correspond to Z, Y axes in Unity respectively
@@ -139,7 +137,9 @@ There are a few methods to address this problem:
 2. A `(x, y, z)` rotation vector in ROS => `(-x, -z, -y)` vector in Unity
 3. A `(x, y, z, w)` quaternion in ROS => `(x, z, y, -w)` quaternion in Unity
 
-The C# implementation of the `geometry_msgs/Vector3` and `geometry_msgs/Quaternion` messages have `AsUnityVector` and `AsUnityQuaternion` fields available to perform the conversion automatically. 
+## Data Representation
+
+Due to the differences in world axes, any custom message that contains a 3D vector or quaternion should follow the ROS world frame system for consistency. In order to obtain the Unity equivalent, it is recommended to implement either `AsUnityVector` or `AsUnityQuaternion` as a public field for the custom message class that performs the conversion. Refer to the implmentation of `geometry_msgs/Vector3` and `geometry_msgs/Quaternion` as examples. The following code snippet illustrate the differences in representation.
 
 ```csharp
 ros.geometry_msgs.Vector3 rosvec = new ros.geometry_msgs.Vector3();
