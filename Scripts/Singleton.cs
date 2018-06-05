@@ -2,9 +2,9 @@
 
 using UnityEngine;
 
-namespace Scripts
+namespace ros
 {
-    public class Singleton<T> : MonoBehaviour where T : Singleton<T>
+    public class Singleton<T> : RosComponent where T : Singleton<T>
     {
         private static T _Instance;
         public static T Instance

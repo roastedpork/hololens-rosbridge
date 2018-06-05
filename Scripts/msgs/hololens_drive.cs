@@ -82,7 +82,7 @@ namespace ros
             public System.String ToJSON()
             {
                 System.String ret = "{";
-                ret += "\"rel_position\": " + header.ToJSON() + ", ";
+                ret += "\"header\": " + header.ToJSON() + ", ";
                 ret += "\"obstacles\": [";
                 ret += System.String.Join(", ", obstacles.Select(a => a.ToJSON()).ToArray()); 
                 ret += "]} ";
@@ -90,5 +90,88 @@ namespace ros
             }
         }
         
-    } // hololens_drive
+        public class Primitive : IRosClassInterface
+        {
+            public System.String id;
+            public System.String shape;
+
+            public std_msgs.ColorRGBA color;
+            public geometry_msgs.Pose pose;
+            public geometry_msgs.Vector3 scale;
+
+            public Primitive()
+            {
+                id = "";
+                shape = "cube";
+
+                color = new std_msgs.ColorRGBA();
+                pose = new geometry_msgs.Pose();
+                scale = new geometry_msgs.Vector3();
+            }
+
+            public Primitive(string _id, string _shape, std_msgs.ColorRGBA _color, geometry_msgs.Pose _pose, geometry_msgs.Vector3 _scale)
+            {
+                id = _id;
+                shape = _shape;
+                pose = _pose;
+                scale = _scale;
+            }
+
+            public void FromJSON(JSONNode msg)
+            {
+                id = msg["id"].Value;
+                shape = msg["shape"].Value.ToLower();
+                color.FromJSON(msg["color"]);
+                pose.FromJSON(msg["pose"]);
+                scale.FromJSON(msg["scale"]);
+
+            }
+
+            public System.String ToJSON()
+            {
+                return "{" +
+                       "\"id\": \"" + id + "\", " +
+                       "\"shape\": \"" + shape + "\", " +
+                       "\"color\": " + color.ToJSON() + ", " +
+                       "\"pose\": " + pose.ToJSON() + ", " +
+                       "\"scale\": " + scale.ToJSON() + "}";
+            }
+        }
+
+        public class PrimitiveArray : IRosClassInterface
+        {
+            public std_msgs.Header header;
+            public List<Primitive> primitives;
+
+            public PrimitiveArray()
+            {
+                header = new std_msgs.Header();
+                primitives = new List<Primitive>();
+            }
+
+            public PrimitiveArray(std_msgs.Header _header, List<Primitive> _primitives)
+            {
+                header = _header;
+                primitives = _primitives;
+            }
+
+            public void FromJSON(JSONNode msg)
+            {
+                header.FromJSON(msg["header"]);
+                foreach (var t in msg["primitives"].Children)
+                {
+                    Primitive temp = new Primitive();
+                    temp.FromJSON(t);
+                    primitives.Add(temp);
+                }
+
+            }
+
+            public System.String ToJSON()
+            {
+                return "{\"header\": " + header.ToJSON() + ", " +
+                       "\"primitives\": [" + System.String.Join(", ", primitives.Select(a => a.ToJSON()).ToArray()) + "]}";
+            }
+        }
+    } // hololens_project
 } // ros

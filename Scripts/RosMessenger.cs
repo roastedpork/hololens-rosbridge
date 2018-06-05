@@ -13,7 +13,6 @@
 //github.com/2016UAVClass/Simulation-Unity3D @author Michael Jenkin, Robert Codd-Downey and Andrew Speers
 
 using UnityEngine;
-using Scripts;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -31,7 +30,7 @@ using System.Threading.Tasks;
 #endif
 
 [System.Serializable]
-public class RosMessenger : Singleton<RosMessenger>
+public class RosMessenger : HoloToolkit.Unity.Singleton<RosMessenger>
 {
 
     
