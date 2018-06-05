@@ -50,7 +50,7 @@ public class RosMessenger : HoloToolkit.Unity.Singleton<RosMessenger>
     // List of queued ROS messages from subscribed topics
     public Dictionary<string, Queue<JSONNode>> topicBuffer;
     public Dictionary<string, string> topicType;
-
+    
     //WebSocket client from Windows.Networking.Sockets
 
 #if !UNITY_EDITOR
@@ -72,11 +72,7 @@ public class RosMessenger : HoloToolkit.Unity.Singleton<RosMessenger>
 
     public void Start()
     {
-        StartCoroutine(WaitForConnection());
-        // Once connected, activate all gameobjects tagged as "RosGameObject"
-
-
-
+        StartCoroutine(WaitForConnection());    
     }
 
     private IEnumerator WaitForConnection()
@@ -87,9 +83,7 @@ public class RosMessenger : HoloToolkit.Unity.Singleton<RosMessenger>
         {
             obj.SetActive(true);
         }
-
     }
-
 
     public void Update()
     {
@@ -212,8 +206,8 @@ public class RosMessenger : HoloToolkit.Unity.Singleton<RosMessenger>
 
     public void Subscribe(string topic, string type){
         string msg = "{\"op\": \"subscribe\", \"topic\": \"" + topic + "\",\"type\": \"" + type + "\"}";
+        
         Send(msg);
-        // Debug.Log("Subscribing to '" + topic + "' topic (" + type + ")");
         subscribeList.Add(topic);
         topicBuffer[topic] = new Queue<JSONNode>();
         topicType[topic] = type;
@@ -221,22 +215,20 @@ public class RosMessenger : HoloToolkit.Unity.Singleton<RosMessenger>
 
     public void Unsubscribe(string topic){
         string msg = "{\"op\": \"unsubscribe\", \"topic\": \"" + topic + "\"}";
+        
         Send(msg);
-        // Debug.Log("Unsubscribing from '" + topic + "' topic");
         subscribeList.Remove(topic);
     }
 
     public void Advertise(string topic, string type){
         string msg = "{\"op\": \"advertise\", \"topic\": \"" + topic + "\",\"type\": \"" + type + "\"}";
         Send(msg);
-        // Debug.Log("Advertising on '" + topic + "' topic (" + type + ")");
         advertiseList.Add(topic);
     }
 
     public void Unadvertise(string topic){
         string msg = "{\"op\": \"unadvertise\", \"topic\": \"" + topic + "\"}";
         Send(msg);
-        // Debug.Log("Unadvertising from '" + topic + "' topic");
         advertiseList.Remove(topic);
     }
 

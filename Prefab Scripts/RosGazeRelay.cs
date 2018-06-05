@@ -5,7 +5,7 @@ using UnityEngine;
 public class RosGazeRelay : RosComponent {
 
 
-    public double PublishingRate = 5;
+    public double PublishingRate = 2;
     private RosPublisher<ros.geometry_msgs.PointStamped> FocusedPointPub;
     private RosPublisher<ros.geometry_msgs.PoseStamped> HeadPosePub;
 
@@ -21,7 +21,7 @@ public class RosGazeRelay : RosComponent {
         if (RosGazeManager.Instance.Focused)
         {
             ros.geometry_msgs.PointStamped fp = new ros.geometry_msgs.PointStamped();
-            fp.header.frame_id = "Unity";
+            fp.header.frame_id = "/Unity";
             fp.point = new ros.geometry_msgs.Point(RosGazeManager.Instance.position);
 
             Publish(FocusedPointPub, fp);
@@ -29,7 +29,7 @@ public class RosGazeRelay : RosComponent {
 
 
         ros.geometry_msgs.PoseStamped hp = new ros.geometry_msgs.PoseStamped();
-        hp.header.frame_id = "Unity";
+        hp.header.frame_id = "/Unity";
         hp.pose = new ros.geometry_msgs.Pose(new ros.geometry_msgs.Point(Camera.main.transform.position),
                                              new ros.geometry_msgs.Quaternion(Camera.main.transform.rotation));
 

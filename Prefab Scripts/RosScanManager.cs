@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using HoloToolkit.Unity;
 using HoloToolkit.Unity.InputModule;
 using UnityEngine;
@@ -23,7 +24,31 @@ public class RosScanManager : Singleton<RosScanManager>
     {
         IsScanning = false;
         InstructionTextMesh.text = "Say \"Begin scan\" to begin searching for floor depth";
+        StartCoroutine(WaitForSpeechInit());
     }
+
+    private IEnumerator WaitForSpeechInit()
+    {
+        yield return new WaitUntil(() => RosUserSpeechManager.Instance != null);
+
+        RosUserSpeechManager.Instance.AddNewPhrase("Begin scan", () =>
+        {
+            RosUserSpeechManager.Instance.voicebox.StartSpeaking("Scanning for floor depth");
+            StartScan();
+        });
+
+        RosUserSpeechManager.Instance.AddNewPhrase("Stop scan", () =>
+        {
+            RosUserSpeechManager.Instance.voicebox.StartSpeaking("Stopping scan");
+            StopScan();
+
+            GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            floor.transform.position = new Vector3(0, Parameters.FloorDepth, 0);
+            floor.transform.localScale = new Vector3(1, 1, 1) * 30;
+            floor.GetComponent<MeshRenderer>().enabled = false;
+        });
+    }
+
 
     public void StartScan()
     {

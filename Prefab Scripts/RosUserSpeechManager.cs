@@ -8,9 +8,12 @@ using HoloToolkit.Unity;
 public class RosUserSpeechManager : ros.Singleton<RosUserSpeechManager>
 {
     public RosPublisher<ros.std_msgs.String> pub;
+    public AudioSource StartBeep;
+    public AudioSource StopBeep;
+
 
     // Voice & Microphone
-    private TextToSpeech voicebox;
+    public TextToSpeech voicebox { get; private set; }
     private KeywordRecognizer keywordRecognizer;
     private DictationRecognizer dictationRecognizer;
 
@@ -18,7 +21,7 @@ public class RosUserSpeechManager : ros.Singleton<RosUserSpeechManager>
 
     private void Start()
     {
-        Advertise("VoicePub", "/hololens/audio/user_transcript", 10, out pub);
+        Advertise("VoicePub", "/hololens/audio/user_transcript", 1, out pub);
 
         voicebox = gameObject.GetComponent<TextToSpeech>();
 
@@ -30,125 +33,12 @@ public class RosUserSpeechManager : ros.Singleton<RosUserSpeechManager>
             voicebox.StartSpeaking("Hello");
         });
 
-        Keywords.Add("hey robot", () =>
+        Keywords.Add("hello there", () =>
         {
             PhraseRecognitionSystem.Shutdown();
-            voicebox.StartSpeaking("how can I help you?");
+            StartBeep.Play();
             dictationRecognizer.Start();
         });
-
-        /*
-        keywords.Add("Move there", () => {
-            if (!wpManager.gameObject.activeSelf) voicebox.StartSpeaking("Waypoint manager is not active");
-            else if (!wpManager.AddingMultipleWaypoints) wpManager.SingleWaypoint();
-        });
-        keywords.Add("Add point", () => {
-            if (!wpManager.gameObject.activeSelf) voicebox.StartSpeaking("Waypoint manager is not active");
-            else if (wpManager.AddWaypoint())
-            {
-                voicebox.StartSpeaking("Point added");
-            }
-            else
-            {
-                voicebox.StartSpeaking("Could not add point");
-            }
-
-        });
-        keywords.Add("goodbye", () => {
-            if (!wpManager.gameObject.activeSelf) voicebox.StartSpeaking("Waypoint manager is not active");
-            else if (wpManager.AddingMultipleWaypoints)
-            {
-                wpManager.PublishWaypoints();
-                voicebox.StartSpeaking("Moving along path");
-            }
-            else
-            {
-                voicebox.StartSpeaking("This should not happen");
-            }
-        });
-        /*
-        // Activation phrases for setting world markers
-        keywords.Add("Set marker one", () =>
-        {
-            if (!alignManager.gameObject.activeSelf)
-            {
-                voicebox.StartSpeaking("Alignment manager is not active");
-            }
-            else if (alignManager.SetMarker(1))
-            {
-                voicebox.StartSpeaking("Marker one set");
-            }
-            else
-            {
-                voicebox.StartSpeaking("Could not set marker one");
-            }
-        });
-
-        keywords.Add("Set marker two", () =>
-        {
-            if (!alignManager.gameObject.activeSelf)
-            {
-                voicebox.StartSpeaking("Alignment manager is not active");
-            }
-            else if (alignManager.SetMarker(2))
-            {
-                voicebox.StartSpeaking("Marker two set");
-            }
-            else
-            {
-                voicebox.StartSpeaking("Could not set marker two");
-            }
-        });
-
-        keywords.Add("Set marker three", () =>
-        {
-            if (!alignManager.gameObject.activeSelf)
-            {
-                voicebox.StartSpeaking("Alignment manager is not active");
-            }
-            else if (alignManager.SetMarker(3))
-            {
-                voicebox.StartSpeaking("Marker three set");
-            }
-            else
-            {
-                voicebox.StartSpeaking("Could not set marker three");
-            }
-        });
-
-        keywords.Add("Begin scan", () =>
-        {
-            if (ScanManager.Instance.isActiveAndEnabled)
-            {
-                voicebox.StartSpeaking("Starting scan");
-                ScanManager.Instance.StartScan();
-                //Parameters.FloorDepth = 0.0f;
-            }
-            else
-            {
-                voicebox.StartSpeaking("Scan Manager is not active");
-            }
-        });
-
-
-        keywords.Add("Stop scan", () =>
-        {
-            if (ScanManager.Instance.isActiveAndEnabled)
-            {
-                voicebox.StartSpeaking("Stopping scan");
-                ScanManager.Instance.StopScan();
-
-                GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
-                floor.transform.position = new Vector3(0, Parameters.FloorDepth, 0);
-                floor.transform.localScale = new Vector3(1, 1, 1) * 30;
-                floor.GetComponent<MeshRenderer>().enabled = false;
-            }
-            else
-            {
-                voicebox.StartSpeaking("Scan Manager is not active");
-            }
-        });
-        */
 
         dictationRecognizer = new DictationRecognizer();
         dictationRecognizer.DictationComplete += DictationComplete;
@@ -194,6 +84,7 @@ public class RosUserSpeechManager : ros.Singleton<RosUserSpeechManager>
 
     private void DictationComplete(DictationCompletionCause cause)
     {
+        StopBeep.Play();
         PhraseRecognitionSystem.Restart();
         keywordRecognizer.Start();
     }
@@ -205,15 +96,7 @@ public class RosUserSpeechManager : ros.Singleton<RosUserSpeechManager>
 
     private void DictationError(string error, int hresult)
     {
-        /*
-        dictationRecognizer.DictationComplete -= DictationComplete;
-        dictationRecognizer.DictationError -= DictationError;
-        dictationRecognizer.DictationHypothesis -= DictationHypothesis;
-        dictationRecognizer.DictationResult -= DictationResult;
-        dictationRecognizer.Dispose();
-        dictationRecognizer.Stop();
-        keywordRecognizer.Start();
-        */
+
     }
 
 

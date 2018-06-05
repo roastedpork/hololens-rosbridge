@@ -8,7 +8,7 @@ public class RosPublisher<T>
     where T : IRosClassInterface, new()
 {
 
-    private bool connected = false;
+    public bool connected { get; private set; }
 
     private Queue<T> SendQueue;
 
@@ -23,6 +23,7 @@ public class RosPublisher<T>
                         int queueSize = 10)
     {
 
+        connected = false;
         name = nodeName;
         RosTopic = rosTopic;
         RosType = typeof(T).ToString();

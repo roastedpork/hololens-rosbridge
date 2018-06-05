@@ -283,7 +283,7 @@ namespace ros
             {
                 System.String ret = "{";
                 ret += "\"header\": " + header.ToJSON() + ", ";
-                ret += "\"polygon\": " + polygon.ToJSON() + ", ";
+                ret += "\"polygon\": " + polygon.ToJSON() + "}";
                 return ret;
             }
 
