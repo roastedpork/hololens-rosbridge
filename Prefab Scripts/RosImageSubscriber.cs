@@ -17,7 +17,7 @@ public class RosImageSubscriber : RosComponent
     // Use this for initialization
     void Start()
     {
-        Subscribe("MinimapSub", ImageTopic, SubscriptionRate, out sub);
+        Subscribe("RosImageSubscriber", ImageTopic, SubscriptionRate, out sub);
         
         rawImage = transform.Find("RawImage").GetComponent<RawImage>();
         rawImage.color = new Color(1, 1, 1, 0);

@@ -17,13 +17,11 @@ public class RosSpeechOutput : RosComponent
     
     // Voice & Microphone
     private TextToSpeech voicebox;
-    private bool connected = false;
 
 
     private void Start()
     {
         Subscribe("VoiceOutputSub", "/hololens/audio/speech_output", 10, out sub);
-        connected = true;
 
         voicebox = GetComponent<TextToSpeech>();
     }

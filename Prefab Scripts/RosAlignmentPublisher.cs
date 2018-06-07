@@ -11,7 +11,7 @@ public class RosAlignmentPublisher : RosComponent
     // Use this for initialization
     void Start()
     {
-        Advertise("WorldAlignmentPub", "/hololens/reference_points", 1, out pub);
+        Advertise("RosAlignmentPublisher", "/hololens/reference_points", 1, out pub);
 
         UnityEngine.XR.WSA.Persistence.WorldAnchorStore.GetAsync(AnchorStoreReady);
 
