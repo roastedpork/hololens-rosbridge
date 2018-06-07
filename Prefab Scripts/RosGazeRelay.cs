@@ -30,8 +30,13 @@ public class RosGazeRelay : RosComponent {
 
         ros.geometry_msgs.PoseStamped hp = new ros.geometry_msgs.PoseStamped();
         hp.header.frame_id = "/Unity";
+
+        Quaternion headRot = Camera.main.transform.rotation;
+        
+        // Shifting head rotation because it was rotated in unity
+        headRot *= Quaternion.Euler(0, -90, 0);
         hp.pose = new ros.geometry_msgs.Pose(new ros.geometry_msgs.Point(Camera.main.transform.position),
-                                             new ros.geometry_msgs.Quaternion(Camera.main.transform.rotation));
+                                             new ros.geometry_msgs.Quaternion(headRot));
 
         Publish(HeadPosePub, hp);
 

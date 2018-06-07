@@ -14,6 +14,7 @@ public class RosScanManager : Singleton<RosScanManager>
 
     private GameObject smHandler;
     private GameObject suHandler;
+    private GameObject floor;
 
 
 
@@ -22,6 +23,10 @@ public class RosScanManager : Singleton<RosScanManager>
     // Use this for initialization
     void Start()
     {
+        floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        floor.transform.position = new Vector3(0, Parameters.FloorDepth, 0);
+        floor.transform.localScale = new Vector3(1, 1, 1) * 30;
+        floor.GetComponent<MeshRenderer>().enabled = false;
         IsScanning = false;
         InstructionTextMesh.text = "Say \"Begin scan\" to begin searching for floor depth";
         StartCoroutine(WaitForSpeechInit());
@@ -33,6 +38,7 @@ public class RosScanManager : Singleton<RosScanManager>
 
         RosUserSpeechManager.Instance.AddNewPhrase("Begin scan", () =>
         {
+            if (floor != null) Destroy(floor);
             RosUserSpeechManager.Instance.voicebox.StartSpeaking("Scanning for floor depth");
             StartScan();
         });
@@ -42,7 +48,7 @@ public class RosScanManager : Singleton<RosScanManager>
             RosUserSpeechManager.Instance.voicebox.StartSpeaking("Stopping scan");
             StopScan();
 
-            GameObject floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
             floor.transform.position = new Vector3(0, Parameters.FloorDepth, 0);
             floor.transform.localScale = new Vector3(1, 1, 1) * 30;
             floor.GetComponent<MeshRenderer>().enabled = false;
@@ -83,10 +89,10 @@ public class RosScanManager : Singleton<RosScanManager>
     // Update is called once per frame
     void Update()
     {
+        if(IsScanning) InstructionTextMesh.text = "Current Floor Depth: " + Parameters.FloorDepth.ToString();
         if (IsScanning && RosGazeManager.Instance.Focused)
         {
-            Parameters.FloorDepth = (Parameters.FloorDepth > RosGazeManager.Instance.position.y) ? RosGazeManager.Instance.position.y : Parameters.FloorDepth;
-            InstructionTextMesh.text = "Current Floor Depth: " + Parameters.FloorDepth.ToString();
+            Parameters.FloorDepth = (Parameters.FloorDepth > RosGazeManager.Instance.position.y) ? RosGazeManager.Instance.position.y : Parameters.FloorDepth;    
         }
     }
 }

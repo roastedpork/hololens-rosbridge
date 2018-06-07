@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RosAlignmentPublisher : ros.Singleton<RosAlignmentPublisher>
+public class RosAlignmentPublisher : RosComponent
 {
     public List<GameObject> Markers;
     private UnityEngine.XR.WSA.Persistence.WorldAnchorStore anchorStore;
@@ -101,7 +101,7 @@ public class RosAlignmentPublisher : ros.Singleton<RosAlignmentPublisher>
 
         foreach (GameObject obj in Markers)
         {
-            ros.geometry_msgs.Point32 temp = new ros.geometry_msgs.Point32(obj.transform.position);
+            ros.geometry_msgs.Point32 temp = new ros.geometry_msgs.Point32(obj.transform.position.x, obj.transform.position.z, Parameters.FloorDepth);
             msg.polygon.points.Add(temp);
         }
 

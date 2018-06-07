@@ -160,11 +160,11 @@ namespace ros
                 y = 0;
                 z = 0;
             }
-            public Point32(System.Double _x, System.Double _y, System.Double _z)
+            public Point32(float _x, float _y, float _z)
             {
-                x = (float)_x;
-                y = (float)_y;
-                z = (float)_z;
+                x = _x;
+                y = _y;
+                z = _z;
             }
             public Point32(UnityEngine.Vector3 vector)
             {
