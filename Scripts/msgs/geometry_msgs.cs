@@ -472,10 +472,10 @@ namespace ros
             public UnityEngine.Quaternion AsUnityQuaternion
             {
                 // Unity axes are swapped and rotating in the opposite direction
-                get { return new UnityEngine.Quaternion((float)x,
-                                                        (float)z,
-                                                        (float)y,
-                                                        -(float)w);
+                get { return new UnityEngine.Quaternion(-(float)x,
+                                                        -(float)z,
+                                                        -(float)y,
+                                                        (float)w);
                 }    
             }
 
@@ -496,10 +496,10 @@ namespace ros
             }
             public Quaternion(UnityEngine.Quaternion _q)
             {
-                x = _q.x;
-                y = _q.z;
-                z = _q.y;
-                w = -_q.w;
+                x = -_q.x;
+                y = -_q.z;
+                z = -_q.y;
+                w = _q.w;
             }
 
             // IRosClassInterface Implementation
@@ -633,18 +633,11 @@ namespace ros
                 // Because Unity world axes are screwed up                                                    
                 get
                 {
-                    if (IsRotationVector)
-                    {
-                        return new UnityEngine.Vector3(-(float)x,
-                                                       -(float)z,
-                                                       -(float)y);
-                    }
-                    else
-                    {
-                        return new UnityEngine.Vector3((float)x,
-                                                       (float)z,
-                                                       (float)y);
-                    }
+                    int sign = (IsRotationVector) ? -1 : 1;
+                    UnityEngine.Vector3 res = new UnityEngine.Vector3((float)x,
+                                                                      (float)z,
+                                                                      (float)y);
+                    return sign * res;
                 }
             }
 

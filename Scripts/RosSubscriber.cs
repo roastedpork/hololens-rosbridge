@@ -11,10 +11,10 @@ public class RosSubscriber<T>
     private Queue<JSONNode> buffer;
     private Queue<T> MsgQueue;
 
-    public String name;
-    private String RosTopic;
-    private String RosType;
-    private int QueueSize;
+    public String name { get; private set; }
+    public String RosTopic { get; private set; }
+    public String RosType { get; private set; }
+    public int QueueSize { get; private set; }
 
     public bool MsgReady
     {
@@ -50,8 +50,15 @@ public class RosSubscriber<T>
 
         Debug.Log("[" + name + "] Subscribed successfully, message type: " + RosType);
 #endif
-
     }
+
+    public void Terminate()
+    {
+#if !UNITY_EDITOR
+        RosMessenger.Instance.Unsubscribe(RosTopic);
+#endif
+    }
+
 
     public T GetNewMessage()
     {

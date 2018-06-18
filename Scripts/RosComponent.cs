@@ -14,7 +14,6 @@ public abstract class RosComponent : MonoBehaviour
         period = new Dictionary<string, double>();
     }
 
-
     protected bool Subscribe<T>(string name, string topic, double rate, out RosSubscriber<T> subscriber)
         where T : IRosClassInterface, new()
     {
@@ -30,6 +29,21 @@ public abstract class RosComponent : MonoBehaviour
         return true;
     }
 
+    protected bool Unsubscribe<T>(RosSubscriber<T> subscriber)
+        where T : IRosClassInterface, new()
+    {
+        if (prevTimeStamp.ContainsKey(subscriber.name))
+        {
+            prevTimeStamp.Remove(subscriber.name);
+            period.Remove(subscriber.name);
+
+            subscriber.Terminate();
+            subscriber = null;
+            return true;
+        }
+        return false;
+    }
+
     protected bool Advertise<T>(string name, string topic, double rate, out RosPublisher<T> publisher)
         where T : IRosClassInterface, new()
     {
@@ -42,6 +56,22 @@ public abstract class RosComponent : MonoBehaviour
         period[name] = 1 / rate;
         publisher = new RosPublisher<T>(name, topic, 1);
         return true;
+    }
+
+    protected bool Unadvertise<T>(RosPublisher<T> publisher)
+    where T : IRosClassInterface, new()
+    {
+        if (prevTimeStamp.ContainsKey(publisher.name))
+        {
+            prevTimeStamp.Remove(publisher.name);
+            period.Remove(publisher.name);
+
+            publisher.Terminate();
+            publisher = null;
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -68,6 +98,7 @@ public abstract class RosComponent : MonoBehaviour
             (currTimeStamp - prevTimeStamp[subscriber.name] > period[subscriber.name]))
         {
             message = subscriber.GetNewMessage();
+            prevTimeStamp[subscriber.name] = currTimeStamp;
             return true;
         }
 

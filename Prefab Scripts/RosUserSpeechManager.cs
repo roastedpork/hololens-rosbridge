@@ -33,7 +33,7 @@ public class RosUserSpeechManager : ros.Singleton<RosUserSpeechManager>
             voicebox.StartSpeaking("Hello");
         });
 
-        Keywords.Add("hello there", () =>
+        Keywords.Add("record this", () =>
         {
             PhraseRecognitionSystem.Shutdown();
             StartBeep.Play();

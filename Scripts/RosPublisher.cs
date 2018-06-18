@@ -12,11 +12,11 @@ public class RosPublisher<T>
 
     private Queue<T> SendQueue;
 
-    public string name;
-    private string RosTopic;
-    private string RosType;
-    private int QueueSize;
-    
+    public string name { get; private set; }
+    public string RosTopic { get; private set; }
+    public string RosType { get; private set; }
+    public int QueueSize { get; private set; }
+
     public RosPublisher(String nodeName,
                         String rosTopic,
                         float rate = 20,
@@ -37,6 +37,13 @@ public class RosPublisher<T>
 #endif
         connected = true;
 
+    }
+
+    public void Terminate()
+    {
+#if !UNITY_EDITOR
+        RosMessenger.Instance.Unadvertise(RosTopic); 
+#endif
     }
 
     public void SendMessage(T data)

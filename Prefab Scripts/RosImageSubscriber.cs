@@ -10,6 +10,7 @@ public class RosImageSubscriber : RosComponent
     private const String valuemap = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
     private RawImage rawImage;
     private RosSubscriber<ros.std_msgs.String> sub;
+    private bool active;
 
     public String ImageTopic = "/hololens/display/image";
     public double SubscriptionRate = 10;
@@ -17,8 +18,6 @@ public class RosImageSubscriber : RosComponent
     // Use this for initialization
     void Start()
     {
-        Subscribe("RosImageSubscriber", ImageTopic, SubscriptionRate, out sub);
-        
         rawImage = transform.Find("RawImage").GetComponent<RawImage>();
         rawImage.color = new Color(1, 1, 1, 0);
     }
@@ -49,22 +48,32 @@ public class RosImageSubscriber : RosComponent
         return buff.ToArray();
     }
 
+    public void ShowDisplay()
+    {
+        Subscribe("RosImageSubscriber", ImageTopic, SubscriptionRate, out sub);
+        active = true;
+        rawImage.color = new Color(1, 1, 1, 1);
+    }
+    public void HideDisplay()
+    {
+        Unsubscribe(sub);
+        active = false;
+        rawImage.color = new Color(1, 1, 1, 0);
+    }
+
     // Update is called once per frame
     void Update()
     {
-        ros.std_msgs.String mapMsg;
+        ros.std_msgs.String msg;
         
-
-        if (Receive(sub, out mapMsg))
+        if (active && Receive(sub, out msg))
         {
-            String encoded = mapMsg.data;
+            String encoded = msg.data;
             byte[] image = DecodeString(encoded);
-
+            
             Texture2D tex = new Texture2D(2, 2);
             tex.LoadImage(image);
             rawImage.texture = tex;
-            rawImage.color = new Color(1, 1, 1, 1);
-
         }
     }
 }
